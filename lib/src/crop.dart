@@ -584,10 +584,10 @@ class _CropPainter extends CustomPainter {
         _kCropOverlayActiveOpacity * active +
             _kCropOverlayInactiveOpacity * (1.0 - active));
     final boundaries = Rect.fromLTWH(
-      rect.width * area.left,
-      rect.height * area.top,
-      rect.width * area.width,
-      rect.height * area.height,
+      rect.width * area.left + 20,
+      rect.height * area.top + 20,
+      rect.width * area.width - 40,
+      rect.height * area.height - 40,
     );
     canvas.drawRect(Rect.fromLTRB(0.0, 0.0, rect.width, boundaries.top), paint);
     canvas.drawRect(
