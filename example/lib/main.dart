@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_crop/image_crop.dart';
+import 'package:image_picker/image_picker.dart';
 
 // Hidden import to let `flutter packages pub publish --dry-run` complete without errors
 // FIXME: uncomment to try out example code
@@ -58,30 +59,39 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget _buildCroppingImage() {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: Crop.file(_sample, key: cropKey),
-        ),
-        Container(
-          padding: const EdgeInsets.only(top: 20.0),
-          alignment: AlignmentDirectional.center,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              FlatButton(
-                child: Text(
-                  'Crop Image',
-                  style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),
-                ),
-                onPressed: () => _cropImage(),
-              ),
-              _buildOpenImage(),
-            ],
+    return SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
+      child: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 500,
+            child: Crop.file(_sample, key: cropKey),
           ),
-        )
-      ],
-    );
+
+          Container(
+            padding: const EdgeInsets.only(top: 20.0),
+            alignment: AlignmentDirectional.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                FlatButton(
+                  child: Text(
+                    'Crop Image',
+                    style: Theme.of(context).textTheme.button.copyWith(color: Colors.white),
+                  ),
+                  onPressed: () => _cropImage(),
+                ),
+                _buildOpenImage(),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 300,
+            child: _lastCropped == null ? Container() : Image.file(_lastCropped),
+          )
+        ],
+      ),
+    ) ;
   }
 
   Widget _buildOpenImage() {
@@ -120,6 +130,8 @@ class _MyAppState extends State<MyApp> {
 
     // scale up to use maximum possible number of pixels
     // this will sample image in higher resolution to make cropped image larger
+// scale up to use maximum possible number of pixels
+    // this will sample image in higher resolution to make cropped image larger
     final sample = await ImageCrop.sampleImage(
       file: _file,
       preferredSize: (2000 / scale).round(),
@@ -133,7 +145,10 @@ class _MyAppState extends State<MyApp> {
     sample.delete();
 
     _lastCropped?.delete();
-    _lastCropped = file;
+    setState(() {
+      _lastCropped = file;
+    });
+
 
     debugPrint('$file');
   }

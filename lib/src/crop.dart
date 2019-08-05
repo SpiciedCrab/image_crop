@@ -33,28 +33,28 @@ class Crop extends StatefulWidget {
         super(key: key);
 
   Crop.file(
-    File file, {
-    Key key,
-    double scale = 1.0,
-    this.aspectRatio,
-    this.maximumScale: 2.0,
-    this.alwaysShowGrid: false,
-    this.onImageError,
-  })  : image = FileImage(file, scale: scale),
+      File file, {
+        Key key,
+        double scale = 1.0,
+        this.aspectRatio,
+        this.maximumScale: 2.0,
+        this.alwaysShowGrid: false,
+        this.onImageError,
+      })  : image = FileImage(file, scale: scale),
         assert(maximumScale != null),
         assert(alwaysShowGrid != null),
         super(key: key);
 
   Crop.asset(
-    String assetName, {
-    Key key,
-    AssetBundle bundle,
-    String package,
-    this.aspectRatio,
-    this.maximumScale: 2.0,
-    this.alwaysShowGrid: false,
-    this.onImageError,
-  })  : image = AssetImage(assetName, bundle: bundle, package: package),
+      String assetName, {
+        Key key,
+        AssetBundle bundle,
+        String package,
+        this.aspectRatio,
+        this.maximumScale: 2.0,
+        this.alwaysShowGrid: false,
+        this.onImageError,
+      })  : image = AssetImage(assetName, bundle: bundle, package: package),
         assert(maximumScale != null),
         assert(alwaysShowGrid != null),
         super(key: key);
@@ -87,16 +87,15 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
   ImageStreamListener _imageListener;
 
   double get scale => _area.shortestSide / _scale;
-
   Rect get area {
     return _view.isEmpty
         ? null
-        : Rect.fromLTRB(
-            _view.left,
-            _view.top,
-            _view.left + _view.width * _area.width / _scale,
-            _view.top + _view.height * _area.height / _scale,
-          );
+        : Rect.fromLTWH(
+        _area.left * 1.05  / _scale,
+        _area.top / _scale,
+        _area.width * _view.width / _scale,
+        _area.height / _scale
+    );
   }
 
   bool get _isEnabled => !_view.isEmpty && _image != null;
@@ -166,6 +165,9 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
     }
   }
 
+  double _lockedLeft = 0;
+  double _lockedTop = 0;
+
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
@@ -183,6 +185,8 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
             view: _view,
             area: _area,
             scale: _scale,
+            lockedLeft: _lockedLeft,
+            lockedTop: _lockedTop,
             active: _activeController.value,
           ),
         ),
@@ -210,7 +214,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
 
   Size get _boundaries =>
       _surfaceKey.currentContext.size -
-      Offset(_kCropHandleSize, _kCropHandleSize);
+          Offset(_kCropHandleSize, _kCropHandleSize);
 
   Offset _getLocalPoint(Offset point) {
     final RenderBox box = _surfaceKey.currentContext.findRenderObject();
@@ -264,12 +268,17 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
           viewWidth,
           viewHeight,
         );
+
+        _lockedLeft = _area.left;
+        _lockedTop = _area.top;
+
       });
     });
     WidgetsBinding.instance.ensureVisualUpdate();
   }
 
   _CropHandleSide _hitCropHandle(Offset localPoint) {
+    print(localPoint.toString());
     final boundaries = _boundaries;
     final viewRect = Rect.fromLTWH(
       _boundaries.width * _area.left,
@@ -319,6 +328,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
 
   void _handleScaleStart(ScaleStartDetails details) {
     _activate();
+    print(details.localFocalPoint.toString());
     _settleController.stop(canceled: false);
     _lastFocalPoint = details.focalPoint;
     _action = _CropAction.none;
@@ -444,6 +454,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
   }
 
   void _handleScaleUpdate(ScaleUpdateDetails details) {
+
     if (_action == _CropAction.none) {
       if (_handle == _CropHandleSide.none) {
         _action = details.rotation == 0.0 && details.scale == 1.0
@@ -453,7 +464,6 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
         _action = _CropAction.cropping;
       }
     }
-
     if (_action == _CropAction.cropping) {
       final delta = details.focalPoint - _lastFocalPoint;
       _lastFocalPoint = details.focalPoint;
@@ -510,6 +520,9 @@ class _CropPainter extends CustomPainter {
   final double scale;
   final double active;
 
+  final double lockedTop;
+  final double lockedLeft;
+
   _CropPainter({
     this.image,
     this.view,
@@ -517,7 +530,8 @@ class _CropPainter extends CustomPainter {
     this.area,
     this.scale,
     this.active,
-  });
+    this.lockedTop,
+    this.lockedLeft});
 
   @override
   bool shouldRepaint(_CropPainter oldDelegate) {
@@ -551,8 +565,8 @@ class _CropPainter extends CustomPainter {
         image.height.toDouble(),
       );
       final dst = Rect.fromLTWH(
-        rect.width * area.left - image.width * view.left * scale * ratio,
-        rect.height * area.top - image.height * view.top * scale * ratio,
+        rect.width * lockedLeft - image.width * view.left * scale * ratio,
+        rect.height * lockedTop - image.height * view.top * scale * ratio,
         image.width * scale * ratio,
         image.height * scale * ratio,
       );
