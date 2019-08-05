@@ -7,7 +7,7 @@ const _kCropOverlayActiveOpacity = 0.3;
 const _kCropOverlayInactiveOpacity = 0.7;
 const _kCropHandleColor = const Color.fromRGBO(0xd0, 0xd0, 0xd0, 1.0);
 const _kCropHandleSize = 10.0;
-const _kCropHandleHitSize = 48.0;
+const _kCropHandleHitSize = 100.0;
 const _kCropMinFraction = 0.1;
 
 enum _CropAction { none, moving, cropping, scaling }
@@ -584,10 +584,10 @@ class _CropPainter extends CustomPainter {
         _kCropOverlayActiveOpacity * active +
             _kCropOverlayInactiveOpacity * (1.0 - active));
     final boundaries = Rect.fromLTWH(
-      rect.width * area.left + 20,
-      rect.height * area.top + 20,
-      rect.width * area.width - 40,
-      rect.height * area.height - 40,
+      rect.width * area.left,
+      rect.height * area.top,
+      rect.width * area.width,
+      rect.height * area.height,
     );
     canvas.drawRect(Rect.fromLTRB(0.0, 0.0, rect.width, boundaries.top), paint);
     canvas.drawRect(
