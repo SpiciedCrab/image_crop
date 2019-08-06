@@ -579,12 +579,7 @@ class _CropPainter extends CustomPainter {
       canvas.restore();
     }
 
-    paint.color = Color.fromRGBO(
-        0x0,
-        0x0,
-        0x0,
-        _kCropOverlayActiveOpacity * active +
-            _kCropOverlayInactiveOpacity * (1.0 - active));
+    paint.color = Colors.yellow;
     final boundaries = Rect.fromLTWH(
       rect.width * area.left,
       rect.height * area.top,
