@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         children: <Widget>[
           SizedBox(
             height: 500,
-            child: Crop.file(_sample, key: cropKey),
+            child: Crop.file(_sample, key: cropKey, shouldDefaultToTop: true,),
           ),
 
           Container(

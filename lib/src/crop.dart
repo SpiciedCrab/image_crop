@@ -19,6 +19,7 @@ class Crop extends StatefulWidget {
   final double maximumScale;
   final bool alwaysShowGrid;
   final ImageErrorListener onImageError;
+  final bool shouldDefaultToTop;
 
   const Crop({
     Key key,
@@ -26,6 +27,7 @@ class Crop extends StatefulWidget {
     this.aspectRatio,
     this.maximumScale: 2.0,
     this.alwaysShowGrid: false,
+    this.shouldDefaultToTop: false,
     this.onImageError,
   })  : assert(image != null),
         assert(maximumScale != null),
@@ -39,6 +41,7 @@ class Crop extends StatefulWidget {
         this.aspectRatio,
         this.maximumScale: 2.0,
         this.alwaysShowGrid: false,
+        this.shouldDefaultToTop: false,
         this.onImageError,
       })  : image = FileImage(file, scale: scale),
         assert(maximumScale != null),
@@ -53,6 +56,7 @@ class Crop extends StatefulWidget {
         this.aspectRatio,
         this.maximumScale: 2.0,
         this.alwaysShowGrid: false,
+        this.shouldDefaultToTop: false,
         this.onImageError,
       })  : image = AssetImage(assetName, bundle: bundle, package: package),
         assert(maximumScale != null),
@@ -240,7 +244,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
     final width = 1.0;
     final height = (imageWidth * viewWidth * width) /
         (imageHeight * viewHeight * (widget.aspectRatio ?? 1.0));
-    return Rect.fromLTWH((1.0 - width) / 2, (1.0 - height) / 2, width, height);
+    return Rect.fromLTWH((1.0 - width) / 2, widget.shouldDefaultToTop ? 0 : (1.0 - height) / 2, width, height);
   }
 
   void _updateImage(ImageInfo imageInfo, bool synchronousCall) {
@@ -270,7 +274,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
         );
 
         _lockedLeft = _area.left;
-        _lockedTop = 0;
+        _lockedTop = _area.top;
 
       });
     });
