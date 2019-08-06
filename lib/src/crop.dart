@@ -244,7 +244,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
     final width = 1.0;
     final height = (imageWidth * viewWidth * width) /
         (imageHeight * viewHeight * (widget.aspectRatio ?? 1.0));
-    return Rect.fromLTWH((1.0 - width) / 2, widget.shouldDefaultToTop ? 0 : (1.0 - height) / 2, width, height);
+    return Rect.fromLTWH((1.0 - width) / 2, widget.shouldDefaultToTop ? -0.05 : (1.0 - height) / 2, width, height);
   }
 
   void _updateImage(ImageInfo imageInfo, bool synchronousCall) {
