@@ -96,7 +96,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
         ? null
         : Rect.fromLTWH(
         _area.left * 1.05  / _scale,
-        _area.top / _scale,
+        _view.top + _area.top / _scale,
         _area.width * _view.width / _scale,
         _area.height / _scale
     );
@@ -491,9 +491,8 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
         _updateArea(right: dx, bottom: dy);
       }
     } else if (_action == _CropAction.moving) {
-      final delta = _lastFocalPoint - details.focalPoint;
+      Offset delta = _lastFocalPoint - details.focalPoint;
       _lastFocalPoint = details.focalPoint;
-
       setState(() {
         _view = _view.translate(
           delta.dx / (_image.width * _scale * _ratio),
