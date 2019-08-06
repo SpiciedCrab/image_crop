@@ -176,26 +176,32 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: const BoxConstraints.expand(),
-      child: GestureDetector(
+      child:   GestureDetector(
         key: _surfaceKey,
         behavior: HitTestBehavior.opaque,
         onScaleStart: _isEnabled ? _handleScaleStart : null,
         onScaleUpdate: _isEnabled ? _handleScaleUpdate : null,
         onScaleEnd: _isEnabled ? _handleScaleEnd : null,
-        child: CustomPaint(
-          painter: _CropPainter(
-            image: _image,
-            ratio: _ratio,
-            view: _view,
-            area: _area,
-            scale: _scale,
-            lockedLeft: _lockedLeft,
-            lockedTop: _lockedTop,
-            active: _activeController.value,
-          ),
+        child: AnimatedCrossFade(
+            firstChild: Container() ,
+            secondChild: SizedBox.expand(
+              child: CustomPaint(
+                  painter: _CropPainter(
+                    image: _image,
+                    ratio: _ratio,
+                    view: _view,
+                    area: _area,
+                    scale: _scale,
+                    lockedLeft: _lockedLeft,
+                    lockedTop: _lockedTop,
+                    active: _activeController.value,
+                  )),
+            )
+            ,
+            crossFadeState: _image == null ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            duration: Duration(milliseconds: 500))
         ),
-      ),
-    );
+      );
   }
 
   void _activate() {
@@ -579,7 +585,12 @@ class _CropPainter extends CustomPainter {
       canvas.restore();
     }
 
-    paint.color = Colors.yellow;
+    paint.color = Color.fromRGBO(
+        0x0,
+        0x0,
+        0x0,
+        _kCropOverlayActiveOpacity * active +
+            _kCropOverlayInactiveOpacity * (1.0 - active));
     final boundaries = Rect.fromLTWH(
       rect.width * area.left,
       rect.height * area.top,
