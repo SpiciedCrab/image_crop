@@ -184,7 +184,9 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
         onScaleEnd: _isEnabled ? _handleScaleEnd : null,
         child: AnimatedCrossFade(
             firstChild: Container() ,
-            secondChild: SizedBox.expand(
+            secondChild: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
               child: CustomPaint(
                   painter: _CropPainter(
                     image: _image,
@@ -199,7 +201,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
             )
             ,
             crossFadeState: _image == null ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-            duration: Duration(milliseconds: 500))
+            duration: Duration(milliseconds: 200))
         ),
       );
   }
