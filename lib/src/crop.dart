@@ -282,7 +282,6 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
   }
 
   _CropHandleSide _hitCropHandle(Offset localPoint) {
-    print(localPoint.toString());
     final boundaries = _boundaries;
     final viewRect = Rect.fromLTWH(
       _boundaries.width * _area.left,
@@ -332,7 +331,6 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
 
   void _handleScaleStart(ScaleStartDetails details) {
     _activate();
-    print(details.localFocalPoint.toString());
     _settleController.stop(canceled: false);
     _lastFocalPoint = details.focalPoint;
     _action = _CropAction.none;
