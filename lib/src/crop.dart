@@ -95,8 +95,8 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
     return _view.isEmpty
         ? null
         : Rect.fromLTWH(
-        _area.left * 1.05  / _scale,
-        _view.top + _area.top / _scale,
+        _view.left + _view.left * _area.left / _scale,
+        _view.top + _view.top * _area.top / _scale,
         _area.width * _view.width / _scale,
         _area.height / _scale
     );
