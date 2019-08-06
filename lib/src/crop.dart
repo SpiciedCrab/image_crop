@@ -270,7 +270,7 @@ class CropState extends State<Crop> with TickerProviderStateMixin, Drag {
         );
 
         _lockedLeft = _area.left;
-        _lockedTop = _area.top;
+        _lockedTop = 0;
 
       });
     });
